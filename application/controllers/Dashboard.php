@@ -20,28 +20,29 @@ class Dashboard extends CI_Controller
         $unix = $this->Pc_model->get_stat_unix();
         $android = $this->Pc_model->get_stat_android();
 
+
         // Initialiser le tableau de données
-        $data = array();
+        $data = array(
+            'api' => array(
+                'windows' => 0,
+                'unix' => 0,
+                'android' => 0
+        )
+    );
 
         // Vérifier si les résultats existent et les ajouter au tableau $data
         if (!empty($windows)) {
-            $data['windows'] = $windows;
+            $data['api']['windows'] = $windows;
         }
 
         if (!empty($unix)) {
-            $data['unix'] = $unix;
+            $data['api']['unix'] = $unix;
         }
 
         if (!empty($android)) {
-            $data['android'] = $android;
+            $data['api']['android'] = $android;
         }
-
-        // Si aucune donnée n'est trouvée, initialiser à 0
-        if (empty($data['windows']) && empty($data['unix']) && empty($data['android'])) {
-            $data['windows'] = 0;
-            $data['unix'] = 0;
-            $data['android'] = 0;
-        }
+       
 
         // Charger la vue avec les données
         $this->load->view('api', $data);

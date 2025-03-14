@@ -19,27 +19,25 @@ class Consultation extends CI_Controller {
             show_error("Le paramètre 'pc' est requis dans l'URL.", 400);
             return;
         }
-        $nomPc = $params['pc'];
-        $data['pc'] = $this->Pc_model->get_Infos_cons_main($nomPc);      
-        $data['software'] = $this->Pc_model->get_Infos_cons_software($nomPc);
-        $data['network'] = $this->Pc_model->get_Infos_cons_network($nomPc);
 
-
-        // Initialiser le tableau de données
         $data = array();
-
-        // Vérifier et ajouter les valeurs dans $data si elles existent
+        $nomPc = $params['pc'];
+     
+        // $data['software'] = $this->Pc_model->get_Infos_cons_software($nomPc);
+        // $data['network'] = $this->Pc_model->get_Infos_cons_network($nomPc);
+       
+        $pc = $this->Pc_model->get_Infos_cons_main($nomPc);
         if (!empty($pc)) {
-            $data['pc'] = $pc;
+            $data['api']['pc'] = $pc;
         }
 
-        if (!empty($software)) {
-            $data['software'] = $software;
-        }
+        // if (!empty($software)) {
+        //     $data['software'] = $software;
+        // }
 
-        if (!empty($network)) {
-            $data['network'] = $network;
-        }
+        // if (!empty($network)) {
+        //     $data['network'] = $network;
+        // }
 
         // Charger la vue avec les données
         $this->load->view('api', $data);
