@@ -47,6 +47,97 @@ class Pc_model extends CI_Model {
         return $this->db->get()->result_array();
     }
 
+    public function insert_pc($data){
+        $insert_data = [
+            'NAME'     => $data['name'],
+            'OS'       => $data['os'],
+            'OSNAME'   => $data['osname'],
+            'ARCHITECTURE'   => $data['architecture'],
+            'USER'   => $data['user'],
+            'RAM'      => $data['ram'],
+            'CPU'      => $data['cpu'],
+            'SERIAL'   => $data['serial'],
+            'MAC'      => $data['mac'],
+            'IP'      => $data['ip'],
+            'DOMAIN'      => $data['domaine'],
+            'WINDOWSKEY'      => $data['windows_key'],
+            'LICENSESTATUS'      => $data['license_status'],
+            'UUID'      => $data['uuid'],
+           
+        ];
+        $this->db->insert('hardware', $insert_data);
+    }
+
+    public function update_pc($name, $data){
+        $insert_data = [
+            'NAME'     => $data['name'],
+            'OS'       => $data['os'],
+            'OSNAME'   => $data['osname'],
+            'ARCHITECTURE'   => $data['architecture'],
+            'USER'   => $data['user'],
+            'RAM'      => $data['ram'],
+            'CPU'      => $data['cpu'],
+            'SERIAL'   => $data['serial'],
+            'MAC'      => $data['mac'],
+            'IP'      => $data['ip'],
+            'DOMAIN'      => $data['domaine'],
+            'WINDOWSKEY'      => $data['windows_key'],
+            'LICENSESTATUS'      => $data['license_status'],
+            'UUID'      => $data['uuid'],
+
+        ];
+        $this->db->where('NAME', $name);
+        $this->db->update('hardware', $insert_data);
+
+    }
+
+    public function insert_note($data){
+        $insert_data = [
+            'NAME'     => $data['name'],
+            'OS'       => $data['os'],
+            'OSNAME'   => $data['osname'],
+            'ARCHITECTURE'   => $data['architecture'],
+            'USER'   => $data['user'],
+            'RAM'      => $data['ram'],
+            'CPU'      => $data['cpu'],
+            'SERIAL'   => $data['serial'],
+            'MAC'      => $data['mac'],
+            'IP'      => $data['ip'],
+            'DOMAIN'      => $data['domaine'],
+            'WINDOWSKEY'      => $data['windows_key'],
+            'LICENSESTATUS'      => $data['license_status'],
+            'UUID'      => $data['uuid'],
+           
+        ];
+        $this->db->insert('hardware', $insert_data);
+    }
+
+    public function update_note($name, $data){
+        $insert_data = [
+            'NAME'     => $data['name'],
+            'OS'       => $data['os'],
+            'OSNAME'   => $data['osname'],
+            'ARCHITECTURE'   => $data['architecture'],
+            'USER'   => $data['user'],
+            'RAM'      => $data['ram'],
+            'CPU'      => $data['cpu'],
+            'SERIAL'   => $data['serial'],
+            'MAC'      => $data['mac'],
+            'IP'      => $data['ip'],
+            'DOMAIN'      => $data['domaine'],
+            'WINDOWSKEY'      => $data['windows_key'],
+            'LICENSESTATUS'      => $data['license_status'],
+            'UUID'      => $data['uuid'],
+
+        ];
+        $this->db->where('NAME', $name);
+        $this->db->update('hardware', $insert_data);
+
+    }
+
+
+    
+
 
 
 
