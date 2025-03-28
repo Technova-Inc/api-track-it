@@ -41,9 +41,5 @@ class Pull extends CI_Controller
     else {
         $this->Pc_model->update_pc($data);
     }
-
-
-
-
     }
 }
