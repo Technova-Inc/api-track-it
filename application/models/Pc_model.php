@@ -21,6 +21,13 @@ class Pc_model extends CI_Model {
         return $this->db->get()->result_array();
     }
 
+    public function get_Infos_soft_main($id){
+        $this->db->select("*");
+        $this->db->from('software');
+        $this->db->where('HARDWARE_ID', $id);
+        return $this->db->get()->result_array();
+    }
+
     public function get_stat_win(){
         $this->db->select("*");
         $this->db->like('OSNAME', 'Windows'); 
@@ -41,6 +48,13 @@ class Pc_model extends CI_Model {
         return $this->db->count_all_results(); 
     }
 
+    public function get_stat_macos(){
+        $this->db->select("*");
+        $this->db->like('OSNAME', 'macos'); 
+        $this->db->from('hardware'); 
+        return $this->db->count_all_results(); 
+    }
+
     public function get_lst_pc(){
         $this->db->select('NAME, LASTDATE, LASTCOME');
         $this->db->from('hardware'); 
@@ -51,7 +65,7 @@ class Pc_model extends CI_Model {
         $insert_data = [
             'NAME'     => $data['name'],
             'OS'       => $data['os'],
-            'OSNAME'   => $data['osname'],
+            'OSNAME'   => $data['os_version'],
             'ARCHITECTURE'   => $data['architecture'],
             'USER'   => $data['user'],
             'RAM'      => $data['ram'],
