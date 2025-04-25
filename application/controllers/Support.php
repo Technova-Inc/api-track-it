@@ -4,8 +4,7 @@ class Pull extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Pc_model');
-        $this->load->model('Notes_model'); // Ajout du modèle pour les notes
+        $this->load->model('Support_model');
         $this->load->helper('url');
     }
 
@@ -13,20 +12,9 @@ class Pull extends CI_Controller
     {
         // Initialiser $data avec des valeurs par défaut
         $data = [
-            'name'           => 'Inconnu',
-            'osversion'      => 'Inconnu',
-            'osname'         => 'Inconnu',
-            'architecture'   => 'Inconnu',
-            'user'           => 'Inconnu',
-            'ram'            => 'Inconnu',
-            'cpu'            => 'Inconnu',
-            'serial'         => 'Inconnu',
-            'mac'            => 'Inconnu',
-            'ip'             => 'Inconnu',
-            'domaine'        => 'Inconnu',
-            'windows_key'    => 'Inconnu',
-            'license_status' => 'Inconnu',
-            'uuid'           => 'Inconnu',
+            'titreTicket'    => 'Inconnu',
+            'descriptionTicket' => 'Inconnu',
+            'idCategorie'    => 'Inconnu',
         ];
 
         // Récupération et validation du JSON
@@ -44,7 +32,7 @@ class Pull extends CI_Controller
             $data = [
                 'name'           => $json->name ?? 'Inconnu',
                 'os_name'        => $json->os ?? 'Inconnu',
-                'os_version'     => $json->os_version ?? 'Inconnu',
+                'os_version'     => $json->os_version ?? 'Inconnu', // Correction ici
                 'architecture'   => $json->architecture ?? 'Inconnu',
                 'user'           => $json->user ?? 'Inconnu',
                 'ram'            => $json->ram ?? 'Inconnu',
@@ -69,26 +57,6 @@ class Pull extends CI_Controller
 
         // Réponse JSON
         $response = ['status' => 'success', 'message' => 'Data processed successfully'];
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-    }
-
-    public function notes($pc_name)
-    {
-        $json = file_get_contents("php://input");
-        $json = json_decode($json);
-
-        // Vérifier si le JSON est valide
-        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
-            show_error("Invalid JSON format", 400);
-            return;
-        }
-        // Récupérer les notes associées à un PC
-        $notes = $this->Notes_model->insert_note_for_pc($pc_name, $json->notes ?? 'Inconnu');
-
-        // Réponse JSON
-        $response = ['status' => 'success'];
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
