@@ -58,14 +58,13 @@ class Pull extends CI_Controller
             ];
         }
 
-        // Vérification si le PC existe dans la base
-        // $pc = $this->Pc_model->get_Infos_cons_main($data['name']);
+        $pc = $this->Pc_model->get_Infos_cons_main($data['name']);
 
-        // if (empty($pc)) {
-        //     $this->Pc_model->insert_pc($data);
-        // } else {
-        //     $this->Pc_model->update_pc($data['name'], $data);
-        // }
+        if (empty($pc)) {
+            $this->Pc_model->insert_pc($data);
+        } else {
+            $this->Pc_model->update_pc($data['name'], $data);
+        }
 
         // Réponse JSON
         $response = ['status' => 'success', 'message' => 'Data processed successfully'];
