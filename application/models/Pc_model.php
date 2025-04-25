@@ -64,8 +64,8 @@ class Pc_model extends CI_Model {
     public function insert_pc($data){
         $insert_data = [
             'NAME'     => $data['name'],
-            'OS'       => $data['os'],
-            'OSNAME'   => $data['os_version'],
+            'OSNAME'       => $data['os_name'],
+            'OSVERSION'   => $data['os_version'],
             'ARCHITECTURE'   => $data['architecture'],
             'USER'   => $data['user'],
             'MEMORY'      => $data['ram'],
@@ -85,8 +85,8 @@ class Pc_model extends CI_Model {
     public function update_pc($name, $data){
         $insert_data = [
             'NAME'     => $data['name'],
-            'OS'       => $data['os'],
-            'OSNAME'   => $data['osname'],
+            'OSNAME'       => $data['os_name'],
+            'OSVERSION'   => $data['os_version'],
             'ARCHITECTURE'   => $data['architecture'],
             'USER'   => $data['user'],
             'MEMORY'      => $data['ram'],

@@ -13,7 +13,7 @@ class Pull extends CI_Controller
         // Initialiser $data avec des valeurs par défaut
         $data = [
             'name'           => 'Unknown',
-            'os'             => 'Unknown',
+            'osversion'      => 'Unknown',
             'osname'         => 'Unknown',
             'architecture'   => 'Unknown',
             'user'           => 'Unknown',
@@ -42,7 +42,7 @@ class Pull extends CI_Controller
             // Extraire les données en évitant les erreurs
             $data = [
                 'name'           => $json->name ?? 'Unknown',
-                'os'             => $json->os ?? 'Unknown',
+                'os_name'        => $json->os ?? 'Unknown',
                 'os_version'     => $json->os_version ?? 'Unknown', // Correction ici
                 'architecture'   => $json->architecture ?? 'Unknown',
                 'user'           => $json->user ?? 'Unknown',
