@@ -35,11 +35,11 @@ class Pull extends CI_Controller
     }
     $pc = $this->Pc_model->get_Infos_cons_main($data['name']);
     
-    if (empty($pc)) {
-        $this->Pc_model->insert_pc($data);
-    }
-    else {
-        $this->Pc_model->update_pc($data);
-    }
+        if (empty($pc)) {
+            $this->Pc_model->insert_pc($data);
+        }
+        else {
+            $this->Pc_model->update_pc($data);
+        }
     }
 }
