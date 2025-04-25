@@ -12,20 +12,20 @@ class Pull extends CI_Controller
     {
         // Initialiser $data avec des valeurs par défaut
         $data = [
-            'name'           => 'Unknown',
-            'osversion'      => 'Unknown',
-            'osname'         => 'Unknown',
-            'architecture'   => 'Unknown',
-            'user'           => 'Unknown',
-            'ram'            => 'Unknown',
-            'cpu'            => 'Unknown',
-            'serial'         => 'Unknown',
-            'mac'            => 'Unknown',
-            'ip'             => 'Unknown',
-            'domaine'        => 'Unknown',
-            'windows_key'    => 'Unknown',
-            'license_status' => 'Unknown',
-            'uuid'           => 'Unknown',
+            'name'           => 'Inconnu',
+            'osversion'      => 'Inconnu',
+            'osname'         => 'Inconnu',
+            'architecture'   => 'Inconnu',
+            'user'           => 'Inconnu',
+            'ram'            => 'Inconnu',
+            'cpu'            => 'Inconnu',
+            'serial'         => 'Inconnu',
+            'mac'            => 'Inconnu',
+            'ip'             => 'Inconnu',
+            'domaine'        => 'Inconnu',
+            'windows_key'    => 'Inconnu',
+            'license_status' => 'Inconnu',
+            'uuid'           => 'Inconnu',
         ];
 
         // Récupération et validation du JSON
@@ -41,20 +41,20 @@ class Pull extends CI_Controller
 
             // Extraire les données en évitant les erreurs
             $data = [
-                'name'           => $json->name ?? 'Unknown',
-                'os_name'        => $json->os ?? 'Unknown',
-                'os_version'     => $json->os_version ?? 'Unknown', // Correction ici
-                'architecture'   => $json->architecture ?? 'Unknown',
-                'user'           => $json->user ?? 'Unknown',
-                'ram'            => $json->ram ?? 'Unknown',
-                'cpu'            => $json->cpu ?? 'Unknown',
-                'serial'         => $json->serial ?? 'Unknown',
-                'mac'            => $json->mac ?? 'Unknown',
-                'ip'             => $json->ip ?? 'Unknown',
-                'domaine'        => $json->domaine ?? 'Unknown',
-                'windows_key'    => $json->windows_key ?? 'Unknown',
-                'license_status' => $json->license_status ?? 'Unknown',
-                'uuid'           => $json->uuid ?? 'Unknown',
+                'name'           => $json->name ?? 'Inconnu',
+                'os_name'        => $json->os ?? 'Inconnu',
+                'os_version'     => $json->os_version ?? 'Inconnu', // Correction ici
+                'architecture'   => $json->architecture ?? 'Inconnu',
+                'user'           => $json->user ?? 'Inconnu',
+                'ram'            => $json->ram ?? 'Inconnu',
+                'cpu'            => $json->cpu ?? 'Inconnu',
+                'serial'         => $json->serial ?? 'Inconnu',
+                'mac'            => $json->mac ?? 'Inconnu',
+                'ip'             => $json->ip ?? 'Inconnu',
+                'domaine'        => $json->domaine ?? 'Inconnu',
+                'windows_key'    => $json->windows_key ?? 'Inconnu',
+                'license_status' => $json->license_status ?? 'Inconnu',
+                'uuid'           => $json->uuid ?? 'Inconnu',
             ];
         }
 
