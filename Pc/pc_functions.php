@@ -1,5 +1,5 @@
 <?php
-require_once 'dbconnect.php';
+require_once '../Configuration/dbconnect.php';
 
 function get_Infos_cons_main($nomPc) {
     global $pdo;

@@ -13,11 +13,15 @@ $pc = get_Infos_cons_main($nomPc);
 
 if (!empty($pc)) {
     $response = [
-        'api' => [
-            'pc' => $pc
-        ]
+        'pc' => $pc,
+        'success' => true
     ];
     header('Content-Type: application/json');
+    header('Content-Type: application/json');
+    header("Access-Control-Allow-Origin: *");
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Allow-Credentials: true');
     echo json_encode($response);
 } else {
     echo json_encode(["error" => "Aucun PC trouvé avec ce nom."]);

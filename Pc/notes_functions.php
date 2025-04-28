@@ -1,5 +1,5 @@
 <?php
-require_once 'dbconnect.php';
+require_once '../dbconnect.php';
 
 function get_notes_by_pc($pc_name) {
     global $pdo;

@@ -1,5 +1,5 @@
 <?php
-require_once 'dbconnect.php';  // Assure-toi d'importer la connexion à ta base de données
+require_once '../dbconnect.php';  // Assure-toi d'importer la connexion à ta base de données
 
 // Gestion CORS
 header('Content-Type: application/json');

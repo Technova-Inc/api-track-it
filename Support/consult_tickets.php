@@ -1,5 +1,5 @@
 <?php
-require_once 'dbconnect.php';
+require_once '../dbconnect.php';
 
 // Fonction pour récupérer tous les tickets ou les tickets d'un PC spécifique
 function get_tickets($pc_name = null) {
