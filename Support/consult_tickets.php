@@ -1,11 +1,12 @@
 <?php
 require_once '../Configuration/dbconnect.php';
 
-// Fonction pour récupérer un ticket spécifique par ID
+// Fonction pour récupérer un ticket spécifique par ID avec ses réponses
 function get_ticket_by_id($ticket_id) {
     global $pdo;
 
     try {
+        // Récupérer les informations du ticket
         $stmt = $pdo->prepare(
             "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, t.user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate, t.idstatus 
             FROM tickets t
@@ -16,7 +17,22 @@ function get_ticket_by_id($ticket_id) {
 
         // Vérifier si le ticket existe
         if ($stmt->rowCount() > 0) {
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Récupérer les réponses du ticket
+            $stmt_reponses = $pdo->prepare(
+                "SELECT tr.idCommentaire, tr.commentaire, tr.idUser, tr.feedbackComm, tr.DatePublication, u.Login AS userLogin
+                FROM ticketReponse tr
+                LEFT JOIN users u ON tr.idUser = u.idUtilisateur
+                WHERE tr.idTicket = ?"
+            );
+            $stmt_reponses->execute([$ticket_id]);
+            $reponses = $stmt_reponses->fetchAll(PDO::FETCH_ASSOC);
+
+            // Ajouter les réponses au ticket
+            $ticket['reponses'] = $reponses;
+
+            return $ticket;
         } else {
             throw new Exception("Ticket non trouvé.");
         }
