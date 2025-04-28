@@ -1,34 +1,43 @@
 <?php
-require_once 'dbconnect.php';
+require_once '../Configuration/dbconnect.php';
 
-// Fonction pour récupérer tous les tickets ou les tickets d'un PC spécifique
-function get_tickets($pc_name = null) {
+// Fonction pour récupérer un ticket spécifique par ID
+function get_ticket_by_id($ticket_id) {
     global $pdo;
 
     try {
-        // Si le paramètre pc_name est passé, récupérer les tickets associés à ce PC
-        if ($pc_name) {
-            $stmt = $pdo->prepare(
-                "SELECT t.id, t.pc_name, t.ticket_subject, t.ticket_status, t.created_at, c.libelleCategorie
-                FROM tickets t
-                LEFT JOIN categorietickets c ON t.idCategorie = c.idCategorie
-                WHERE t.pc_name = ?"
-            );
-            $stmt->execute([$pc_name]);
+        $stmt = $pdo->prepare(
+            "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, t.user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate, t.idstatus 
+            FROM tickets t
+            LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie
+            WHERE t.idTicket = ?"
+        );
+        $stmt->execute([$ticket_id]);
+
+        // Vérifier si le ticket existe
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } else {
-            // Sinon, récupérer tous les tickets
-            $stmt = $pdo->query(
-                "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, t.user, t.Priorite, c.libelleCategorie 
-                FROM tickets t 
-                LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie;
-"
-            );
+            throw new Exception("Ticket non trouvé.");
         }
 
-        // Vérifier si la requête a échoué
-        if ($stmt === false) {
-            throw new Exception("Erreur lors de l'exécution de la requête SQL.");
-        }
+    } catch (Exception $e) {
+        // Si une erreur se produit, l'afficher
+        echo json_encode(["error" => "Une erreur est survenue : " . $e->getMessage()]);
+        return false;
+    }
+}
+
+// Fonction pour récupérer tous les tickets
+function get_all_tickets() {
+    global $pdo;
+
+    try {
+        $stmt = $pdo->query(
+            "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, t.user, t.Priorite, c.libelleCategorie 
+            FROM tickets t
+            LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie"
+        );
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -49,20 +58,26 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    // Vérifier si le paramètre 'pc' est fourni
-    if (isset($_GET['pc']) && !empty($_GET['pc'])) {
-        // Si le paramètre 'pc' est passé, récupérer les tickets pour ce PC
-        $pc_name = $_GET['pc'];
-        $tickets = get_tickets($pc_name);
-    } else {
-        // Sinon, récupérer tous les tickets
-        $tickets = get_tickets();
-    }
+    // Vérifier si le paramètre 'id' est fourni
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        // Si l'ID est passé, récupérer ce ticket par son ID
+        $ticket_id = $_GET['id'];
+        $ticket = get_ticket_by_id($ticket_id);
 
-    if ($tickets !== false && !empty($tickets)) {
-        echo json_encode(["success" => true, "tickets" => $tickets]);
+        if ($ticket !== false) {
+            echo json_encode(["success" => true, "ticket" => $ticket]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Ticket non trouvé"]);
+        }
     } else {
-        echo json_encode(["success" => false, "tickets" => []]);
+        // Si aucun ID n'est passé, récupérer tous les tickets
+        $tickets = get_all_tickets();
+
+        if ($tickets !== false && !empty($tickets)) {
+            echo json_encode(["success" => true, "tickets" => $tickets]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Aucun ticket trouvé"]);
+        }
     }
 
 } else {
