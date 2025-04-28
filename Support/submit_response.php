@@ -1,5 +1,5 @@
 <?php
-require_once '../dbconnect.php';  // Connexion BDD
+require_once '../Configuration/dbconnect.php';
 
 // Gestion CORS
 header('Content-Type: application/json');
@@ -8,41 +8,42 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization'); 
 header('Access-Control-Allow-Credentials: true'); 
 
-// Gestion pré-vol CORS
+// Pré-vol CORS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Récupération de la méthode
+// Méthode
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'POST') {
-    // Récupérer le corps JSON
+    // Lire JSON
     $input = json_decode(file_get_contents('php://input'), true);
 
-    // Vérifier que les champs nécessaires sont présents
-    if (!isset($input['idTicket']) || !isset($input['idUser']) || !isset($input['message'])) {
+    // Vérifications
+    if (!isset($input['idTicket']) || !isset($input['idUser']) || !isset($input['commentaire'])) {
         http_response_code(400);
         echo json_encode(["error" => "Tous les champs sont requis."]);
         exit;
     }
 
-    // Extraire les données
+    // Extraction sécurisée
     $idTicket = intval($input['idTicket']);
     $idUser = intval($input['idUser']);
-    $message = trim($input['message']);
+    $commentaire = trim($input['commentaire']);
 
     try {
-        // Préparer la requête d'insertion
-        $stmt = $pdo->prepare("INSERT INTO reponses_tickets (id_ticket, id_user, message, date_reponse)
-                               VALUES (:id_ticket, :id_user, :message, NOW())");
+        // Préparer l'insertion
+        $stmt = $pdo->prepare("
+            INSERT INTO ticketReponse (idTicket, idUser, commentaire)
+            VALUES (:idTicket, :idUser, :commentaire)
+        ");
 
-        // Exécuter
         $stmt->execute([
-            'id_ticket' => $idTicket,
-            'id_user' => $idUser,
-            'message' => $message
+            'idTicket' => $idTicket,
+            'idUser' => $idUser,
+            'commentaire' => $commentaire
         ]);
 
         // Succès
