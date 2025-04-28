@@ -1,16 +1,19 @@
 <?php
 session_start(); // Démarrer la session
+
 // Gestion CORS
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); 
 header('Access-Control-Allow-Headers: Content-Type, Authorization'); 
-header('Access-Control-Allow-Credentials: true'); 
+header('Access-Control-Allow-Credentials: true');
+
 // Si la méthode est OPTIONS (preflight CORS), on répond immédiatement
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
+
 // Inclure la configuration de la base de données
 require_once '../Configuration/dbconnect.php';
 
@@ -21,51 +24,61 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Lire les données envoyées depuis le frontend
+// Lire et valider les données envoyées depuis le frontend
 $data = json_decode(file_get_contents("php://input"));
 
-if (!isset($data->username) || !isset($data->password)) {
+if (empty($data->username) || empty($data->password)) {
     http_response_code(400); // Mauvaise requête
     echo json_encode(["message" => "Nom d'utilisateur et mot de passe requis"]);
     exit;
 }
 
-$username = htmlspecialchars(strip_tags($data->username));
-$password = htmlspecialchars(strip_tags($data->password));
+$username = htmlspecialchars($data->username, ENT_QUOTES, 'UTF-8');
+$password = htmlspecialchars($data->password, ENT_QUOTES, 'UTF-8');
 
 // Connexion à la base de données
 try {
     // Requête pour vérifier l'utilisateur
-    $sql = "SELECT id, username, role, password_hash FROM utilisateurs WHERE username = :username";
+    $sql = "SELECT idUtilisateur, Login, idRole, password FROM users WHERE Login = :username";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->execute();
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Vérifier si l'utilisateur existe et si le mot de passe est correct
-    if ($user && password_verify($password, $user['password_hash'])) {
-        // Vérifier si l'utilisateur a un rôle autorisé
-        $rolesAutorises = ["ROLE_ADMIN", "ROLE_USER", "ROLE_VISITEUR"];
-        if (in_array($user['role'], $rolesAutorises)) {
+    // Vérification de l'utilisateur et du mot de passe directement
+    if ($user && $password === $user['password']) {
+        // Charger les rôles autorisés depuis une configuration centralisée
+        $rolesAutorises = [1, 2, 3]; // ID des rôles autorisés
+        if (in_array($user['idRole'], $rolesAutorises)) {
             // Stocker les informations de l'utilisateur dans la session
             $_SESSION['user'] = [
-                'id' => $user['id'],
-                'username' => $user['username'],
-                'role' => $user['role']
+                'id' => $user['idUtilisateur'],
+                'username' => $user['Login'],
+                'role' => $user['idRole']
             ];
 
+            // Réponse JSON avec les données utilisateur utiles
             http_response_code(200); // Succès
-            echo json_encode(["message" => "Connexion réussie"]);
+            echo json_encode([
+                "message" => "Connexion réussie",
+                "user" => [
+                    "id" => $user['idUtilisateur'],
+                    "username" => $user['Login'],
+                    "role" => $user['idRole']
+                ]
+            ]);
         } else {
             http_response_code(403); // Accès refusé
             echo json_encode(["message" => "Rôle non autorisé"]);
         }
     } else {
         http_response_code(401); // Non autorisé
-        echo json_encode(["message" => "Nom d'utilisateur ou mot de passe incorrect"]);
+        echo json_encode(["message" => "Identifiants incorrects"]);
     }
 } catch (PDOException $e) {
     http_response_code(500); // Erreur interne du serveur
-    echo json_encode(["message" => "Erreur de connexion à la base de données", "error" => $e->getMessage()]);
+    echo json_encode(["message" => "Erreur interne du serveur"]);
+    // Optionnel : Vous pouvez logger $e->getMessage() dans un fichier de log pour le débogage
 }
+?>
