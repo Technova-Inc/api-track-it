@@ -1,5 +1,5 @@
 <?php
-require_once 'pc_functions.php'; 
+require_once './pc_functions.php'; 
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
@@ -15,7 +15,7 @@ if ($method === 'GET') {
 
         echo json_encode([
             "success" => true,
-            "pcs" => $pcs
+            "lstpc" => $pcs
         ]);
     } catch (Exception $e) {
         http_response_code(500);

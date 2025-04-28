@@ -1,5 +1,5 @@
 <?php
-require_once '../Configuration/dbconnect.php';
+require_once '../dbconnect.php';
 
 // Fonction pour récupérer un ticket spécifique par ID
 function get_ticket_by_id($ticket_id) {
