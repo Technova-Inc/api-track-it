@@ -22,7 +22,7 @@ if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
     // Vérifier que tous les champs nécessaires sont présents
-    if (!isset($input['idTicket']) || !isset($input['category']) || !isset($input['priority']) || !isset($input['title']) || !isset($input['description'])) {
+    if (!isset($input['idTicket']) || !isset($input['status']) || !isset($input['priority']) ) {
         http_response_code(400);
         echo json_encode(["error" => "Tous les champs sont requis."]);
         exit;
@@ -30,35 +30,23 @@ if ($method === 'POST') {
 
     // Extraire les données
     $idTicket = $input['idTicket'];  // ID du ticket à mettre à jour
-    $category = $input['category'];
+    $status = $input['status'];
     $priority = $input['priority'];
-    $title = $input['title'];
-    $description = $input['description'];
+    
 
-    // Récupérer l'ID de la catégorie à partir du libellé
-    $stmt = $pdo->prepare("SELECT idCategorie FROM categorieTickets WHERE libelleCategorie = ?");
-    $stmt->execute([$category]);
-    $idCategorie = $stmt->fetchColumn(); // Récupérer l'ID de la catégorie
-
-    if (!$idCategorie) {
-        http_response_code(400);  // Catégorie invalide
-        echo json_encode(["error" => "Catégorie invalide."]);
-        exit;
-    }
+  
 
     // Préparer la mise à jour du ticket
     try {
         $stmt = $pdo->prepare(
             "UPDATE tickets 
-             SET titreTicket = :titreTicket, descriptionTicket = :descriptionTicket, idCategorie = :idCategorie, Priorite = :Priorite
+             SET idstatus = :idStatus, Priorite = :Priorite
              WHERE idTicket = :idTicket"
         );
 
         // Exécuter la requête de mise à jour
         $stmt->execute([
-            'titreTicket' => $title,
-            'descriptionTicket' => $description,
-            'idCategorie' => $idCategorie,
+            'idStatus' => $status,
             'Priorite' => $priority,
             'idTicket' => $idTicket
         ]);
