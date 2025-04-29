@@ -61,7 +61,7 @@ function get_all_tickets($idUser = null) {
         } else {
             // Récupérer tous les tickets
             $stmt = $pdo->query(
-                "SELECT t.idTicket, t.titreTicket, u.Login AS user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate, s.libelleStatus 
+                "SELECT t.idTicket, t.titreTicket, u.Login AS user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate, s.libelleStatus, t.idstatus 
                  FROM tickets t
                  INNER JOIN users u ON t.user = u.idUtilisateur
                  LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie
