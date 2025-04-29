@@ -1,4 +1,4 @@
-# API Track It
+# API Track IT
 
 Ce projet est un backend développé en PHP avec CodeIgniter 3, servant d'API pour gérer les informations des PC. L'API permet d'enregistrer et de mettre à jour les informations des PC via des requêtes POST.
 
