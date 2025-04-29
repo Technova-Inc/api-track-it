@@ -22,7 +22,7 @@ if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
     // Vérifier que tous les champs nécessaires sont présents
-    if (!isset($input['category']) || !isset($input['priority']) || !isset($input['title']) || !isset($input['description'])) {
+    if (!isset($input['category']) || !isset($input['priority']) || !isset($input['userid']) || !isset($input['title']) || !isset($input['description'])) {
         http_response_code(400);
         echo json_encode(["error" => "Tous les champs sont requis."]);
         exit;
@@ -33,6 +33,7 @@ if ($method === 'POST') {
     $priority = $input['priority'];
     $title = $input['title'];
     $description = $input['description'];
+    $user = $input['userid'];
 
     // Récupérer l'ID de la catégorie à partir du libellé
     $stmt = $pdo->prepare("SELECT idCategorie FROM categorieTickets WHERE libelleCategorie = ?");
@@ -44,9 +45,6 @@ if ($method === 'POST') {
         echo json_encode(["error" => "Catégorie invalide."]);
         exit;
     }
-
-    // Récupérer le nom de l'utilisateur (à remplacer par la méthode d'identification de l'utilisateur)
-    $user = $_SESSION['user']['id']; // Exemple d'utilisateur statique, à remplacer par un mécanisme d'identification réel
 
     try {
         // Préparer l'insertion dans la table tickets
