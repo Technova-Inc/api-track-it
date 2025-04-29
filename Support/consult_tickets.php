@@ -49,19 +49,20 @@ function get_all_tickets($idUser = null) {
         if (!empty($idUser)) {
             // Récupérer les tickets pour un utilisateur spécifique
             $stmt = $pdo->prepare(
-                "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, u.Login AS user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate 
-                 FROM tickets t
+               "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, u.Login AS user, t.Priorite, 
+            c.libelleCategorie, t.createDate, t.UpdateDate, t.idstatus, s.libelleStatus
+            FROM tickets t
                  INNER JOIN users u ON t.user = u.idUtilisateur
-                 LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie
-                 WHERE t.user = ?"
+            LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie
+            LEFT JOIN status s ON t.idstatus = s.idstatus
+            WHERE t.user = ?"
             );
             $stmt->execute([$idUser]);
         } else {
             // Récupérer tous les tickets
             $stmt = $pdo->query(
-                "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, u.Login AS user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate 
+                "SELECT t.idTicket, t.titreTicket, t.descriptionTicket, t.user, t.Priorite, c.libelleCategorie, t.createDate, t.UpdateDate 
                  FROM tickets t
-                 INNER JOIN users u ON t.user = u.idUtilisateur
                  LEFT JOIN categorieTickets c ON t.idCategorie = c.idCategorie"
             );
         }
