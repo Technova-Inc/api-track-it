@@ -46,7 +46,7 @@ if ($method === 'POST') {
     }
 
     // Récupérer le nom de l'utilisateur (à remplacer par la méthode d'identification de l'utilisateur)
-    $user = "test"; // Exemple d'utilisateur statique, à remplacer par un mécanisme d'identification réel
+    $user = $_SESSION['user']['id']; // Exemple d'utilisateur statique, à remplacer par un mécanisme d'identification réel
 
     try {
         // Préparer l'insertion dans la table tickets
