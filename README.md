@@ -72,7 +72,7 @@ Ce projet est un backend développé en PHP avec CodeIgniter 3, servant d'API po
 
 ## Documentation de l'API
 
-Pour plus de détails sur l'utilisation de l'API, veuillez consulter notre [documentation API]([https://github.com/Technova-Inc/api-docs](https://github.com/Technova-Inc/API-TrackIT-Documentation)).
+Pour plus de détails sur l'utilisation de l'API, veuillez consulter notre [documentation API]((https://github.com/Technova-Inc/API-TrackIT-Documentation).
 
 ## Développement
 
