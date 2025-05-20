@@ -1,4 +1,12 @@
 <?php
+// Définir les paramètres du cookie de session avant de démarrer la session
+session_set_cookie_params([
+    'lifetime' => 3600,  // Durée du cookie (1 heure)
+    'secure' => false,     // Transmettre seulement via HTTPS
+    'httponly' => true,   // Empêcher l'accès via JavaScript
+    'samesite' => 'Strict' // Empêcher les requêtes inter-domaines
+]);
+
 session_start(); // Démarrer la session
 
 // Gestion CORS
@@ -39,15 +47,15 @@ $password = htmlspecialchars($data->password, ENT_QUOTES, 'UTF-8');
 // Connexion à la base de données
 try {
     // Requête pour vérifier l'utilisateur
-    $sql = "SELECT idUtilisateur, Login, idRole, password FROM users WHERE Login = :username";
+    $sql = "SELECT idUtilisateur, Login, idRole, email, password FROM users WHERE Login = :username";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->execute();
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Vérification de l'utilisateur et du mot de passe directement
-    if ($user && $password === $user['password']) {
+    // Vérification de l'utilisateur et du mot de passe en clair
+    if ($user && $password === $user['password']) {  // Comparer les mots de passe en clair
         // Charger les rôles autorisés depuis une configuration centralisée
         $rolesAutorises = [1, 2, 3]; // ID des rôles autorisés
         if (in_array($user['idRole'], $rolesAutorises)) {
@@ -55,8 +63,12 @@ try {
             $_SESSION['user'] = [
                 'id' => $user['idUtilisateur'],
                 'username' => $user['Login'],
-                'role' => $user['idRole']
+                'role' => $user['idRole'],
+                'email' => $user['email']
             ];
+
+            // Sécuriser le cookie de session
+            session_regenerate_id(true);  // Empêcher les attaques de fixation de session
 
             // Réponse JSON avec les données utilisateur utiles
             http_response_code(200); // Succès
@@ -65,7 +77,9 @@ try {
                 "user" => [
                     "id" => $user['idUtilisateur'],
                     "username" => $user['Login'],
-                    "role" => $user['idRole']
+                    "role" => $user['idRole'],
+                    "email" => $user['email']
+
                 ]
             ]);
         } else {
@@ -81,4 +95,7 @@ try {
     echo json_encode(["message" => "Erreur interne du serveur"]);
     // Optionnel : Vous pouvez logger $e->getMessage() dans un fichier de log pour le débogage
 }
+
+
+
 ?>

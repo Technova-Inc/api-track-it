@@ -15,6 +15,49 @@ function get_os_count($keyword) {
     }
 }
 
+function get_returned_hardware_per_month() {
+    global $pdo;
+
+    try {
+        // Requête pour obtenir le nombre de PC ayant un retour par mois
+        $stmt = $pdo->prepare("
+            SELECT 
+                MONTH(LASTCOME) AS month,
+                COUNT(*) AS total_returns
+            FROM 
+                hardware
+            WHERE 
+                LASTCOME IS NOT NULL
+                AND YEAR(LASTCOME) = YEAR(CURRENT_DATE)
+            GROUP BY 
+                MONTH(LASTCOME)
+            ORDER BY 
+                MONTH(LASTCOME);
+        ");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Créer un tableau avec tous les mois de l'année, initialisés à 0
+        $months = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ];
+
+        $returns_per_month = array_fill(0, 12, 0);
+
+        foreach ($result as $row) {
+            $returns_per_month[$row['month'] - 1] = $row['total_returns'];
+        }
+
+        return array_map(function($month, $returns) {
+            return ['month' => $month, 'total_returns' => $returns];
+        }, $months, $returns_per_month);
+
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
 // En-têtes CORS et JSON
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
@@ -29,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             'unix'    => get_os_count('unix'),
             'android' => get_os_count('android'),
             'macos'   => get_os_count('macos'),
+            'monthly_stats' => get_returned_hardware_per_month(),
+
         ];
 
         echo json_encode([

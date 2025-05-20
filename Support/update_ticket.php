@@ -1,75 +1,100 @@
 <?php
 require_once '../Configuration/dbconnect.php';
+require_once '../email/sendemail.php';
 
-// Gestion CORS
+// CORS headers
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); 
 header('Access-Control-Allow-Headers: Content-Type, Authorization'); 
 header('Access-Control-Allow-Credentials: true'); 
 
-// Vérifier si la requête est une demande OPTIONS (pré-vol CORS)
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Récupérer la méthode de la requête
-$method = $_SERVER['REQUEST_METHOD'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(["error" => "Méthode HTTP non autorisée."]);
+    exit;
+}
 
-if ($method === 'POST') {
-    // Récupérer les données envoyées dans le corps de la requête
-    $input = json_decode(file_get_contents('php://input'), true);
+// Lire les données JSON
+$input = json_decode(file_get_contents('php://input'), true);
 
-    // Vérifier que tous les champs nécessaires sont présents
-    if (!isset($input['idTicket']) || !isset($input['status']) || !isset($input['priority']) ) {
-        http_response_code(400);
-        echo json_encode(["error" => "Tous les champs sont requis."]);
-        exit;
-    }
+if (!isset($input['idTicket']) || !isset($input['status']) || !isset($input['priority'])) {
+    http_response_code(400);
+    echo json_encode(["error" => "Tous les champs sont requis."]);
+    exit;
+}
 
-    // Extraire les données
-    $idTicket = $input['idTicket'];  // ID du ticket à mettre à jour
-    $status = $input['status'];
-    $priority = $input['priority'];
-    
+$idTicket = $input['idTicket'];
+$statusId = $input['status'];
+$priority = $input['priority'];
 
-  
+// Récupération de l'email, du titre du ticket et du libellé du nouveau statut
+$stmt = $pdo->prepare("
+    SELECT u.email, t.titreTicket, s.libelleStatus
+    FROM tickets t
+    JOIN users u ON t.user = u.idUtilisateur
+    JOIN status s ON s.idStatus = :statusId
+    WHERE t.idTicket = :idTicket
+");
+$stmt->execute([
+    'statusId' => $statusId,
+    'idTicket' => $idTicket
+]);
 
-    // Préparer la mise à jour du ticket
-    try {
-        $stmt = $pdo->prepare(
-            "UPDATE tickets 
-             SET idstatus = :idStatus, Priorite = :Priorite
-             WHERE idTicket = :idTicket"
-        );
+$recipientData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Exécuter la requête de mise à jour
-        $stmt->execute([
-            'idStatus' => $status,
-            'Priorite' => $priority,
-            'idTicket' => $idTicket
-        ]);
+if (!$recipientData) {
+    http_response_code(400);
+    echo json_encode(["error" => "Impossible de récupérer les informations pour le ticket."]);
+    exit;
+}
 
-        // Vérifier si la mise à jour a eu lieu
-        if ($stmt->rowCount() > 0) {
-            // Si la mise à jour réussit
-            http_response_code(200); // Réponse 200 OK
-            echo json_encode(["success" => true, "message" => "Ticket mis à jour avec succès"]);
-        } else {
-            // Si le ticket n'existe pas ou aucune modification n'a eu lieu
-            http_response_code(404);  // Ticket non trouvé
-            echo json_encode(["error" => "Ticket non trouvé ou aucune modification effectuée."]);
+$email = $recipientData['email'];
+$titreTicket = $recipientData['titreTicket'];
+$libelleStatus = $recipientData['libelleStatus'];
+
+try {
+    // Mise à jour du ticket
+    $stmt = $pdo->prepare("
+        UPDATE tickets 
+        SET idStatus = :idStatus, Priorite = :Priorite
+        WHERE idTicket = :idTicket
+    ");
+    $stmt->execute([
+        'idStatus' => $statusId,
+        'Priorite' => $priority,
+        'idTicket' => $idTicket
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        // Envoi de l'email de mise à jour
+        $emailResult = sendTicketNotificationEmail($email, $titreTicket, $idTicket, 'update', $libelleStatus, $priority);
+
+        if (!$emailResult['emailSent']) {
+            http_response_code(500);
+            echo json_encode([
+                "success" => true,
+                "message" => "Ticket mis à jour mais l'envoi de l'email a échoué.",
+                "emailSent" => false,
+                "error" => $emailResult['error']
+            ]);
+            exit;
         }
 
-    } catch (Exception $e) {
-        // En cas d'erreur d'exécution
-        http_response_code(500);  // Erreur interne serveur
-        echo json_encode(["error" => "Erreur lors de la mise à jour du ticket: " . $e->getMessage()]);
+        http_response_code(200);
+        echo json_encode(["success" => true, "message" => "Ticket mis à jour avec succès.", "emailSent" => true]);
+    } else {
+        http_response_code(404);
+        echo json_encode(["error" => "Ticket non trouvé ou aucune modification effectuée."]);
     }
 
-} else {
-    http_response_code(405); // Méthode non autorisée
-    echo json_encode(["error" => "Méthode HTTP non autorisée."]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Erreur lors de la mise à jour du ticket: " . $e->getMessage()]);
 }
 ?>
