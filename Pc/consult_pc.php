@@ -10,10 +10,12 @@ if (!isset($_GET['pc']) || empty($_GET['pc'])) {
 $nomPc = $_GET['pc'];
 
 $pc = get_Infos_cons_main($nomPc);
+$rapport = get_rapport_by_machine($nomPc);
 
 if (!empty($pc)) {
     $response = [
         'pc' => $pc,
+        'rapport' => $rapport,
         'success' => true
     ];
     header('Content-Type: application/json');

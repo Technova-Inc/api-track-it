@@ -9,6 +9,17 @@ function get_Infos_cons_main($nomPc) {
 
 }
 
+function get_rapport_by_machine($nomPc) {
+    global $pdo;
+    $sql = "SELECT r.DateRapport, r.Architecture, r.UptimeHeures, r.ScoreSecurite, r.Risques 
+            FROM Rapport r 
+            JOIN hardware h ON r.NomMachine = h.NAME 
+            WHERE r.NomMachine = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$nomPc]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function get_Infos_soft_main($id) {
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM software WHERE HARDWARE_ID = ?");
